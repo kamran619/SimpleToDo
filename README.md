@@ -7,6 +7,9 @@ A simple ToDo App on Android for CodePath prework
 * Tap on an entry to edit
 * Automatically save changes
 
+## Demo
+![Alt text](/images/todo.gif)
+
 ## Upcoming Changes
 - [ ] DB Persistence
 - [ ] Ability to check off items in list
