@@ -1,2 +1,2 @@
-A simple ToDo demo app required for CodePath prework.
-
+# SimpleToDo
+A simple ToDo App on Android for CodePath prework
