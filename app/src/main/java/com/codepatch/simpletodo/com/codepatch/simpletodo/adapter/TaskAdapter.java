@@ -1,6 +1,7 @@
 package com.codepatch.simpletodo.com.codepatch.simpletodo.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,10 @@ import android.widget.TextView;
 
 import com.codepatch.simpletodo.R;
 import com.codepatch.simpletodo.model.Task;
+import com.codepatch.simpletodo.model.Task.Priority;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by kpirwani on 1/25/16.
@@ -37,8 +38,23 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         Task task = getItem(position);
         tvTaskName.setText(task.getName());
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-        String date = formatter.format(new Date());
+        String date = formatter.format(task.getDate());
         tvTaskDate.setText(date);
+        Priority currentPriority = task.getPriority();
+        switch (currentPriority) {
+            case LOW:
+                tvTaskPriority.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPriorityLow));
+                break;
+            case MEDIUM:
+                tvTaskPriority.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPriorityMedium));
+                break;
+            case HIGH:
+                tvTaskPriority.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPriorityHigh));
+                break;
+            case URGENT:
+                tvTaskPriority.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPriorityUrgent));
+                break;
+        }
         tvTaskPriority.setText(task.getPriority().getDescription());
         tvTaskComplete.setChecked(task.isComplete());
         tvTaskComplete.setTag(position);

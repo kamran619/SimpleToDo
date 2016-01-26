@@ -19,7 +19,7 @@ public class PersistenceCoordinator {
 
     public static List<? extends OpenModel> selectEntries(Class fromClass, String orderBy, String whereClause, String... whereArgs) {
         Select select = new Select();
-        From from = select.all().from(fromClass);
+        From from = select.from(fromClass);
         if (whereClause != null && whereArgs != null) {
             from.where(whereClause, whereArgs);
         }

@@ -13,6 +13,7 @@ import com.codepatch.simpletodo.model.Task;
 import com.codepatch.simpletodo.persistance.PersistenceCoordinator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
@@ -73,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateItemsFromStorage() {
-        items = (ArrayList<Task>) PersistenceCoordinator.selectEntries(Task.class, "priority DESC", null, null);
+        items = (ArrayList<Task>) PersistenceCoordinator.selectEntries(Task.class, null , null, null);
+        sortItems();
     }
 
     private void addItemsIfEmpty() {
@@ -147,16 +149,22 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, EDIT_ACTIVITY_REQUEST_CODE);
     }
 
+    private void sortItems() {
+        Collections.sort(items);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == EDIT_ACTIVITY_TEXT_CHANGED && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
             Task editedTask = data.getExtras().getParcelable(TASK);
             items.set(editingItemIndex, editedTask);
+            sortItems();
             itemsAdapter.notifyDataSetChanged();
             saveItems();
         } else if (resultCode == ADD_ITEM_ACTIVITY_ADDED && requestCode == ADD_ITEM_ACTIVITY_REQUEST_CODE) {
             Task newTask = data.getExtras().getParcelable(TASK);
             items.add(newTask);
+            sortItems();
             itemsAdapter.notifyDataSetChanged();
             saveItems();
         }

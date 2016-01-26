@@ -14,7 +14,7 @@ import java.util.List;
  * Created by kpirwani on 1/25/16.
  */
 @Table(name = "Tasks")
-public class Task extends OpenModel implements Parcelable {
+public class Task extends OpenModel implements Parcelable, Comparable {
     @Column(name = "name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE, notNull = true)
     protected String name;
 
@@ -26,6 +26,20 @@ public class Task extends OpenModel implements Parcelable {
 
     @Column(name = "complete")
     protected boolean isComplete;
+
+    @Override
+    public int compareTo(Object another) {
+        int t1Priority = this.priority.getValue();
+        Task t2 = (Task) another;
+        int t2Priority = t2.getPriority().getValue();
+        if (t1Priority < t2Priority) {
+            return 1;
+        } else if (t1Priority == t2Priority) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
 
     public enum Priority {
         LOW(0, "Low"),
@@ -158,6 +172,5 @@ public class Task extends OpenModel implements Parcelable {
         this.priority = (Priority) in.readSerializable();
         this.isComplete = in.readByte() != 0;
     }
-
 
 }
