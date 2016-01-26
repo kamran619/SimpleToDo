@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:descendantFocusability="blocksDescendants"
+    android:id="@+id/rlContentView">
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cbComplete"
+        android:checked="false"
+        android:layout_centerVertical="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Placeholder text for task"
+        android:id="@+id/tvTask"
+        android:paddingLeft="5dp"
+        android:layout_alignParentTop="false"
+        android:layout_toRightOf="@+id/cbComplete"
+        android:layout_toEndOf="@+id/cbComplete"
+        android:textSize="18dp"
+        android:layout_centerVertical="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01/21/2016"
+        android:id="@+id/tvDate"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:paddingRight="10dp"
+        android:textSize="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HIGH"
+        android:id="@+id/tvPriority"
+        android:paddingRight="10dp"
+        android:textSize="14dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:paddingTop="5dp"
+        android:gravity="top" />
+</RelativeLayout>

@@ -1,57 +1,50 @@
 package com.codepatch.simpletodo.persistance;
 
-import android.content.Context;
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Model;
+import com.activeandroid.query.From;
+import com.activeandroid.query.Select;
+import com.codepatch.simpletodo.model.OpenModel;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.apache.commons.io.FileUtils.readLines;
-import static org.apache.commons.io.FileUtils.writeLines;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by kpirwani on 1/23/16.
  */
-public class PersistenceCoordinator<E> {
+public class PersistenceCoordinator {
 
-    private Context context;
-    private String fileName;
-    private ArrayList<E> entryList;
-
-    public PersistenceCoordinator(Context c, String f) {
-        context = c;
-        fileName = f;
+    private PersistenceCoordinator() {
     }
 
-    protected String getFileName() {
-        return fileName;
-    }
-
-    protected Context getContext() {
-        return context;
-    }
-
-    public ArrayList<E> readItems() {
-        File filesDir = getContext().getFilesDir();
-        File dataFile = new File(filesDir, fileName);
-        try {
-            entryList = new ArrayList<E>((Collection<? extends E>) readLines(dataFile));
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static List<? extends OpenModel> selectEntries(Class fromClass, String orderBy, String whereClause, String... whereArgs) {
+        Select select = new Select();
+        From from = select.from(fromClass);
+        if (whereClause != null && whereArgs != null) {
+            from.where(whereClause, whereArgs);
         }
-        return entryList;
+        if (orderBy != null) {
+            from.orderBy(orderBy);
+        }
+        List<? extends OpenModel> models = from.execute();
+        return models;
     }
 
-    public boolean writeItems(ArrayList<E> entries) {
-        File filesDir = getContext().getFilesDir();
-        File dataFile = new File(filesDir, fileName);
+    public static boolean saveEntries(List<? extends Model> items) {
         boolean success = false;
+        ActiveAndroid.beginTransaction();
+        Iterator itr = items.iterator();
         try {
-            writeLines(dataFile, entries);
-        } catch (IOException e) {
-            e.printStackTrace();
+            while (itr.hasNext()) {
+                Model model = (Model) itr.next();
+                model.save();
+            }
+            ActiveAndroid.setTransactionSuccessful();
+            success = true;
+        } finally {
+            ActiveAndroid.endTransaction();
         }
         return success;
     }
 }
+

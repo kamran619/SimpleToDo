@@ -7,8 +7,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 
+import com.codepatch.simpletodo.model.Task;
+
 public class EditItemActivity extends AppCompatActivity {
 
+    private Task mTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,17 +23,18 @@ public class EditItemActivity extends AppCompatActivity {
     }
 
     private void populateTextViewWithEntry() {
-        String task = getIntent().getExtras().getString(MainActivity.TEXT);
+        mTask = getIntent().getExtras().getParcelable(MainActivity.TASK);
         EditText editText = (EditText) findViewById(R.id.etItem);
-        editText.setText(task);
+        editText.setText(mTask.getName());
         editText.setSelection(editText.getText().length());
     }
 
     public void onSaveClicked(View view) {
         EditText editText = (EditText) findViewById(R.id.etItem);
         String editedText = editText.getText().toString();
+        mTask.setName(editedText);
         Intent data = new Intent();
-        data.putExtra(MainActivity.TEXT, editedText);
+        data.putExtra(MainActivity.TASK, mTask);
         setResult(MainActivity.EDIT_ACTIVITY_TEXT_CHANGED, data);
         finish();
     }

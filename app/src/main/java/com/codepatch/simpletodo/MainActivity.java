@@ -7,28 +7,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.codepatch.simpletodo.com.codepatch.simpletodo.adapter.TaskAdapter;
+import com.codepatch.simpletodo.model.Task;
 import com.codepatch.simpletodo.persistance.PersistenceCoordinator;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<String> items;
-    private ArrayAdapter<String> itemsAdapter;
+    private ArrayList<Task> items;
+    private TaskAdapter itemsAdapter;
     private ListView lvItems;
 
     private int editingItemIndex;
-    private PersistenceCoordinator<String> persistenceCoordinator;
 
-    private final String ITEMS_FILE_NAME = "todo.txt";
     public static final int EDIT_ACTIVITY_REQUEST_CODE = 1;
     public static final int EDIT_ACTIVITY_TEXT_CHANGED = 200;
-    public static final String TEXT = "text";
+    public static final String TASK = "task";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +47,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        saveItems();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         saveItems();
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        saveItems();
+    }
+
     private void performInitialSetup() {
         lvItems = (ListView)findViewById(R.id.lvItems);
-        persistenceCoordinator = new PersistenceCoordinator<>(getApplicationContext(), ITEMS_FILE_NAME);
         populateItemsFromStorage();
         addItemsIfEmpty();
         setupAdapter();
@@ -61,37 +73,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateItemsFromStorage() {
-        items = persistenceCoordinator.readItems();
+        items = (ArrayList<Task>) PersistenceCoordinator.selectEntries(Task.class, "priority DESC", null, null);
     }
 
     private void addItemsIfEmpty() {
         if (items == null) {
-            items = new ArrayList<String>();
-            items.add("Clean my room");
-            items.add("Bring my cats inside");
-            items.add("Make valentines day present");
-            items.add("Sign up for the credit card");
-            items.add("Reply to JLK and Hunters emails");
-            items.add("Picnic with Bhaiyya");
+            items = new ArrayList<Task>();
+            items.add(createTaskFromName("Clean my room"));
+            items.add(createTaskFromName("Bring my cats inside"));
+            items.add(createTaskFromName("Make valentines day present"));
+            items.add(createTaskFromName("Sign up for the credit card"));
+            items.add(createTaskFromName("Reply to JLK and Hunters emails"));
+            items.add(createTaskFromName("Picnic with Bhaiyya"));
         }
     }
 
+    private Task createTaskFromName(String name) {
+        int minimumBound = Task.Priority.LOW.getValue();
+        int maximumBound = Task.Priority.URGENT.getValue();
+        //value between minimum bound and maximum bound(inclusive)
+        int randomPriority = new Random().nextInt((maximumBound - minimumBound) + 1) + minimumBound;
+        Task task = new Task(name, new Date(), Task.Priority.createPriorityFromInt(randomPriority));
+        return task;
+    }
+
     private void setupAdapter() {
-        itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new TaskAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
     }
 
     private void saveItems() {
-        persistenceCoordinator.writeItems(items);
+        PersistenceCoordinator.saveEntries(items);
     }
 
     private void setupListViewListener() {
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
+                Task task = items.get(pos);
                 items.remove(pos);
+                task.delete();
                 itemsAdapter.notifyDataSetChanged();
-                saveItems();
                 return true;
             }
         });
@@ -113,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        itemsAdapter.add(itemText);
+        Task task = new Task("Clean the room", new Date(), Task.Priority.MEDIUM);
+        itemsAdapter.add(task);
         etNewItem.setText("");
         saveItems();
     }
@@ -127,13 +150,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onItemClicked(int pos) {
-        String itemText = itemsAdapter.getItem(pos);
-        launchEditView(itemText, pos);
+        Task task = itemsAdapter.getItem(pos);
+        launchEditView(task, pos);
     }
 
-    public void launchEditView(String itemText, int pos) {
+    public void launchEditView(Task task, int pos) {
         Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
-        intent.putExtra(TEXT, itemText);
+        intent.putExtra(TASK, task);
         editingItemIndex = pos;
         startActivityForResult(intent, EDIT_ACTIVITY_REQUEST_CODE);
     }
@@ -141,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == EDIT_ACTIVITY_TEXT_CHANGED && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
-            String newText = data.getExtras().getString(TEXT);
-            items.set(editingItemIndex, newText);
+            Task newTask = data.getExtras().getParcelable(TASK);
+            items.set(editingItemIndex, newTask);
             itemsAdapter.notifyDataSetChanged();
             saveItems();
         }
