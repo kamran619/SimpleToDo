@@ -6,7 +6,9 @@ import android.os.Parcelable;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by kpirwani on 1/25/16.
@@ -56,6 +58,23 @@ public class Task extends OpenModel implements Parcelable {
             return null;
         }
 
+        public static Priority createPriorityFromString(String description) {
+            for (Priority p : Priority.values()) {
+                if (p.getDescription().equalsIgnoreCase(description)) {
+                    return p;
+                }
+            }
+            return null;
+        }
+
+        public static List<String> allPriorities() {
+            ArrayList<String> list = new ArrayList<>();
+            for (Priority p : Priority.values()) {
+                list.add(p.getDescription());
+            }
+            return list;
+        }
+
     }
 
     public Task() {
@@ -63,6 +82,7 @@ public class Task extends OpenModel implements Parcelable {
     }
 
     public Task(Parcel in) {
+        super();
         readFromParcel(in);
     }
 
@@ -114,7 +134,7 @@ public class Task extends OpenModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeLong(getId());
+        out.writeValue(getId());
         out.writeString(this.name);
         out.writeSerializable(this.date);
         out.writeSerializable(this.priority);
@@ -132,7 +152,7 @@ public class Task extends OpenModel implements Parcelable {
     };
 
     public void readFromParcel(Parcel in) {
-        setAaId(in.readLong());
+        setAaId((Long)in.readValue(null));
         this.name = in.readString();
         this.date = (Date) in.readSerializable();
         this.priority = (Priority) in.readSerializable();

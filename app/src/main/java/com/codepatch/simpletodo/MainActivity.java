@@ -1,15 +1,12 @@
 package com.codepatch.simpletodo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.codepatch.simpletodo.com.codepatch.simpletodo.adapter.TaskAdapter;
 import com.codepatch.simpletodo.model.Task;
@@ -26,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView lvItems;
 
     private int editingItemIndex;
+
+    public static final int ADD_ITEM_ACTIVITY_REQUEST_CODE = 0;
+    public static final int ADD_ITEM_ACTIVITY_ADDED = 199;
 
     public static final int EDIT_ACTIVITY_REQUEST_CODE = 1;
     public static final int EDIT_ACTIVITY_TEXT_CHANGED = 200;
@@ -127,31 +127,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddItem(View v) {
-        EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
-        String itemText = etNewItem.getText().toString();
-
-        if (itemText.length() == 0) {
-            showErrorDialog();
-            return;
-        }
-
-        Task task = new Task("Clean the room", new Date(), Task.Priority.MEDIUM);
-        itemsAdapter.add(task);
-        etNewItem.setText("");
-        saveItems();
-    }
-
-    private void showErrorDialog() {
-        Context context = getApplicationContext();
-        CharSequence text = "Please provide a task to add to the todo list";
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
+        launchAddItemView();
     }
 
     public void onItemClicked(int pos) {
         Task task = itemsAdapter.getItem(pos);
         launchEditView(task, pos);
+    }
+
+    public void launchAddItemView() {
+        Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
+        startActivityForResult(intent, ADD_ITEM_ACTIVITY_REQUEST_CODE);
     }
 
     public void launchEditView(Task task, int pos) {
@@ -164,8 +150,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == EDIT_ACTIVITY_TEXT_CHANGED && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
+            Task editedTask = data.getExtras().getParcelable(TASK);
+            items.set(editingItemIndex, editedTask);
+            itemsAdapter.notifyDataSetChanged();
+            saveItems();
+        } else if (resultCode == ADD_ITEM_ACTIVITY_ADDED && requestCode == ADD_ITEM_ACTIVITY_REQUEST_CODE) {
             Task newTask = data.getExtras().getParcelable(TASK);
-            items.set(editingItemIndex, newTask);
+            items.add(newTask);
             itemsAdapter.notifyDataSetChanged();
             saveItems();
         }

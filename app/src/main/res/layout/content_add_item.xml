@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.codepatch.simpletodo.AddItemActivity"
+    tools:showIn="@layout/activity_add_item">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Task Name"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:textSize="16dp"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etTaskName"
+        android:layout_below="@+id/textView"
+        android:layout_alignLeft="@+id/textView"
+        android:layout_alignStart="@+id/textView"
+        android:textSize="22dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvPriority"
+        android:text="Priority"
+        android:layout_below="@+id/etTaskName"
+        android:layout_alignLeft="@+id/etTaskName"
+        android:layout_alignStart="@+id/etTaskName"
+        android:textSize="16dp"
+        android:layout_marginTop="25dp" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spPriority"
+        android:layout_below="@+id/tvPriority"
+        android:layout_alignLeft="@+id/tvPriority"
+        android:layout_alignStart="@+id/tvPriority"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Complete By"
+        android:id="@+id/tvCompleteBy"
+        android:layout_below="@+id/spPriority"
+        android:layout_alignLeft="@+id/spPriority"
+        android:layout_alignStart="@+id/spPriority"
+        android:textSize="16dp"
+        android:layout_marginTop="25dp" />
+
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/datePicker"
+        android:datePickerMode="spinner"
+        android:layout_below="@+id/tvCompleteBy"
+        android:layout_alignLeft="@+id/tvCompleteBy"
+        android:layout_alignStart="@+id/tvCompleteBy"
+        android:calendarViewShown="false" />
+
+</RelativeLayout>
