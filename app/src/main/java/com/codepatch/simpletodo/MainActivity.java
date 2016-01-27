@@ -68,26 +68,13 @@ public class MainActivity extends AppCompatActivity {
     private void performInitialSetup() {
         lvItems = (ListView)findViewById(R.id.lvItems);
         populateItemsFromStorage();
-        addItemsIfEmpty();
+        sortItems();
         setupAdapter();
         setupListViewListener();
     }
 
     private void populateItemsFromStorage() {
         items = (ArrayList<Task>) PersistenceCoordinator.selectEntries(Task.class, null , null, null);
-        sortItems();
-    }
-
-    private void addItemsIfEmpty() {
-        if (items == null) {
-            items = new ArrayList<Task>();
-            items.add(createTaskFromName("Clean my room"));
-            items.add(createTaskFromName("Bring my cats inside"));
-            items.add(createTaskFromName("Make valentines day present"));
-            items.add(createTaskFromName("Sign up for the credit card"));
-            items.add(createTaskFromName("Reply to JLK and Hunters emails"));
-            items.add(createTaskFromName("Picnic with Bhaiyya"));
-        }
     }
 
     private Task createTaskFromName(String name) {
